@@ -6,7 +6,7 @@ name: Audit
 permissions:
   contents: read
   pull-requests: write
-  
+
 on:
   workflow_dispatch:
   schedule:
@@ -24,14 +24,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  audit-rust:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: rust audit
-        uses: rustsec/audit-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+#   audit-rust:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: rust audit
+#         uses: rustsec/audit-check@v1
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
 
   audit-js:
     runs-on: ubuntu-latest

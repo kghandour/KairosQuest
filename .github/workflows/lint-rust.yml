@@ -6,15 +6,8 @@ name: lint rust
 permissions:
   contents: read
   pull-requests: write
-  
-on:
-  push:
-    branches:
-      - dev
-  pull_request:
-    paths:
-      - '.github/workflows/lint-rust.yml'
-      - 'src-tauri/**'
+
+on: push
 
 env:
   RUST_BACKTRACE: 1
