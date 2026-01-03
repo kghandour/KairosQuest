@@ -6,12 +6,8 @@ name: lint js
 permissions:
   contents: read
   pull-requests: write
-  
-on:
-  pull_request:
-    paths:
-      - '.github/workflows/lint-js.yml'
-      - 'src/**'
+
+on: push
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
