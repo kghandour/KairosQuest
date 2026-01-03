@@ -9,14 +9,14 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn get_config() -> String {
-    return config::get_config().to_string();
+    config::get_config().to_string()
 }
 
 #[tauri::command]
 fn update_first_use() -> String {
     config::update_first_use(!config::get_config().is_first_run());
     config::save_config();
-    return get_config();
+    get_config()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

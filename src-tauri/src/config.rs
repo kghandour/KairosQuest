@@ -38,27 +38,26 @@ pub fn get_config_path() -> PathBuf {
     let mut path = std::env::current_exe().expect("Failed to get current directory");
     path.pop(); // Remove executable name
     path.push("app_config.json");
-    return path;
+    path
 }
 
 pub fn init_config(){
     let path = get_config_path();
     
-    let app_config;
-    if path.exists() {
+    let app_config = if path.exists() {
         let data = std::fs::read_to_string(&path)
             .expect("Failed to read config file");
-        app_config = serde_json::from_str(&data).expect("Failed to parse config file")
+        serde_json::from_str(&data).expect("Failed to parse config file")
     } else {
-        app_config = AppConfig::default()
-    }
+        AppConfig::default()
+    };
     let _ = CONFIG.set(RwLock::new(app_config));
 }
 
 pub fn get_config() -> AppConfig{
     let lock = CONFIG.get().expect("Config not initialized");
     let config = lock.read().unwrap();
-    return config.clone();
+    config.clone()
 }
 
 pub fn update_first_use(val: bool){
