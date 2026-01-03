@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
@@ -6,12 +6,17 @@ import "./App.css";
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
-
+  const [config, setConfig] = useState("");
+  
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke("greet", { name }));
   }
 
+  async function get_config() {
+    setConfig(await invoke("get_config"));
+  }
+  
   return (
     <main className="container">
       <h1>Welcome to Tauri + React</h1>
@@ -44,6 +49,16 @@ function App() {
         <button type="submit">Greet</button>
       </form>
       <p>{greetMsg}</p>
+
+      <div className="config-section">
+        <h2>Configuration Settings</h2>
+
+     </div>
+
+      <div className="row">
+        <button onClick={get_config}>Get Config</button>
+      </div>
+      <p>{config}</p>
     </main>
   );
 }
