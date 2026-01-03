@@ -1,7 +1,10 @@
 import { open } from '@tauri-apps/plugin-dialog';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import ConfigContext from '../../shared/contexts/ConfigContext';
+import { invoke } from '@tauri-apps/api/core';
 
 function StartScreen(){
+    const {appConfig, setAppConfig} = useContext(ConfigContext);
     const [workspacePath, setWorkspacePath] = useState("");
 
     async function selectDirectory(){
@@ -11,6 +14,18 @@ function StartScreen(){
         });
 
         setWorkspacePath(directory || "");
+        await update_config("workspace_path", directory)
+    }
+
+    async function update_config(key: string, value: string | boolean){
+        let conf = {}
+        conf[key] = value;
+        setAppConfig(prevConfig => ({
+            ...prevConfig,
+            ...conf,
+        }));
+
+        await invoke('update_config_field', {key: key, field: value});
     }
 
     return(

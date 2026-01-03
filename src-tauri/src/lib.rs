@@ -1,3 +1,5 @@
+use crate::config::save_config;
+
 pub mod config;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -9,13 +11,14 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn get_config() -> String {
-    config::get_config().to_string()
+    return serde_json::to_string_pretty(&config::get_config()).unwrap();
 }
 
 #[tauri::command]
-fn update_first_use() -> String {
-    config::update_first_use(!config::get_config().is_first_run());
-    config::save_config();
+fn update_config_field(key: &str, field: serde_json::Value) -> String {
+    println!("Key is {} and field is {}", key, field);
+    config::update_config_field(key, field);
+    save_config();
     get_config()
 }
 
@@ -28,7 +31,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             get_config,
-            update_first_use
+            update_config_field
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

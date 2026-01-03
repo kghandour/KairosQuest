@@ -6,19 +6,20 @@ use std::sync::{OnceLock, RwLock};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct AppConfig {
     pub first_run: bool,
+    pub workspace_path: String
 }
 
 static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new();
 
 impl fmt::Display for AppConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "AppConfig {{ first_run: {} }}", self.first_run)
+        write!(f, "{}", serde_json::to_string_pretty(self).unwrap())
     }
 }
 
 impl Default for AppConfig {
     fn default() -> Self {
-        AppConfig { first_run: true }
+        AppConfig { first_run: true, workspace_path: "".to_string() }
     }
 }
 
@@ -44,7 +45,10 @@ pub fn init_config() {
 
     let app_config = if path.exists() {
         let data = std::fs::read_to_string(&path).expect("Failed to read config file");
-        serde_json::from_str(&data).expect("Failed to parse config file")
+        match serde_json::from_str(&data) {
+            Ok(app_config) => app_config,
+            Err(_) => AppConfig::default()
+        }
     } else {
         AppConfig::default()
     };
@@ -57,11 +61,30 @@ pub fn get_config() -> AppConfig {
     config.clone()
 }
 
-pub fn update_first_use(val: bool) {
+pub fn update_config_field(key: &str, value: serde_json::Value) {
     if let Some(lock) = CONFIG.get() {
         let mut config = lock.write().unwrap();
-        config.set_first_run(val);
+
+        match key {
+            "first_run" => {
+                if let Some(val) = value.as_bool() {
+                    config.first_run = val;
+                }
+            },
+            "workspace_path" => {
+                if let Some(val) = value.as_str() {
+                    config.workspace_path = val.to_string();
+                }
+            },
+            _ => {
+                eprintln!("Warning: Unknown configuration key '{}'", key);
+            }
+        }
     }
+}
+ 
+pub fn update_first_use(val: bool) {
+    update_config_field("first_run", serde_json::Value::Bool(val));
 }
 
 pub fn save_config() {
@@ -76,7 +99,7 @@ mod tests {
     use super::*;
     #[test]
     fn display_and_serde_roundtrip() {
-        let cfg = AppConfig { first_run: false };
+        let cfg = AppConfig { first_run: false, workspace_path: "".to_string() };
         assert_eq!(format!("{}", cfg), "AppConfig { first_run: false }");
 
         let json = serde_json::to_string(&cfg).unwrap();
