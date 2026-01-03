@@ -16,6 +16,10 @@ function App() {
   async function get_config() {
     setConfig(await invoke("get_config"));
   }
+
+  async function update_first_use(){
+    setConfig(await invoke("update_first_use"));
+  }
   
   return (
     <main className="container">
@@ -57,6 +61,9 @@ function App() {
 
       <div className="row">
         <button onClick={get_config}>Get Config</button>
+      </div>
+      <div className="row">
+        <button onClick={update_first_use}>Update first use</button>
       </div>
       <p>{config}</p>
     </main>
