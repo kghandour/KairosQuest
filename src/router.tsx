@@ -8,10 +8,7 @@ function AppRouter () {
     const {appConfig, setAppConfig} = useContext(ConfigContext);
 
     const is_first_run = () => {
-      if('first_run' in appConfig){
-        return appConfig["first_run"];
-      }
-      return true;
+      return Object.keys(appConfig).length == 0
     }
     
     return (

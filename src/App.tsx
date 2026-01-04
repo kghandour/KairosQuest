@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { BrowserRouter } from "react-router-dom";
-import ConfigContext from "./shared/contexts/ConfigContext";
-import AppRouter from "./router";
+import ConfigContext, { convertVectorToJson } from "./shared/contexts/ConfigContext";
+import AppRouter from "./Router";
 
 function App() {
   // Check if first run using config
@@ -14,7 +14,7 @@ function App() {
 
   useEffect(()=> {
     async function get_config() {
-      setAppConfig(JSON.parse(await invoke("get_config")));
+      setAppConfig(await invoke("get_all_config"));
     }
 
     get_config();
@@ -22,9 +22,9 @@ function App() {
   
   return (
     <BrowserRouter>
-      <ConfigContext value={{appConfig, setAppConfig}}>
+      <ConfigContext.Provider value={{appConfig, setAppConfig}}>
         <AppRouter />
-      </ConfigContext>
+      </ConfigContext.Provider>
     </BrowserRouter>
   );
 }

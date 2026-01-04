@@ -6,7 +6,7 @@ use std::sync::{OnceLock, RwLock};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct AppConfig {
     pub first_run: bool,
-    pub workspace_path: String
+    pub workspace_path: String,
 }
 
 static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new();
@@ -19,7 +19,10 @@ impl fmt::Display for AppConfig {
 
 impl Default for AppConfig {
     fn default() -> Self {
-        AppConfig { first_run: true, workspace_path: "".to_string() }
+        AppConfig {
+            first_run: true,
+            workspace_path: "".to_string(),
+        }
     }
 }
 
@@ -47,7 +50,7 @@ pub fn init_config() {
         let data = std::fs::read_to_string(&path).expect("Failed to read config file");
         match serde_json::from_str(&data) {
             Ok(app_config) => app_config,
-            Err(_) => AppConfig::default()
+            Err(_) => AppConfig::default(),
         }
     } else {
         AppConfig::default()
@@ -70,19 +73,19 @@ pub fn update_config_field(key: &str, value: serde_json::Value) {
                 if let Some(val) = value.as_bool() {
                     config.first_run = val;
                 }
-            },
+            }
             "workspace_path" => {
                 if let Some(val) = value.as_str() {
                     config.workspace_path = val.to_string();
                 }
-            },
+            }
             _ => {
                 eprintln!("Warning: Unknown configuration key '{}'", key);
             }
         }
     }
 }
- 
+
 pub fn update_first_use(val: bool) {
     update_config_field("first_run", serde_json::Value::Bool(val));
 }
@@ -99,7 +102,10 @@ mod tests {
     use super::*;
     #[test]
     fn display_and_serde_roundtrip() {
-        let cfg = AppConfig { first_run: false, workspace_path: "".to_string() };
+        let cfg = AppConfig {
+            first_run: false,
+            workspace_path: "".to_string(),
+        };
         assert_eq!(format!("{}", cfg), "AppConfig { first_run: false }");
 
         let json = serde_json::to_string(&cfg).unwrap();

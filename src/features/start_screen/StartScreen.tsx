@@ -1,6 +1,6 @@
 import { open } from '@tauri-apps/plugin-dialog';
 import React, { useContext, useState } from 'react';
-import ConfigContext from '../../shared/contexts/ConfigContext';
+import ConfigContext, { convertVectorToJson } from '../../shared/contexts/ConfigContext';
 import { invoke } from '@tauri-apps/api/core';
 
 function StartScreen(){
@@ -18,14 +18,7 @@ function StartScreen(){
     }
 
     async function update_config(key: string, value: string | boolean){
-        let conf = {}
-        conf[key] = value;
-        setAppConfig(prevConfig => ({
-            ...prevConfig,
-            ...conf,
-        }));
-
-        await invoke('update_config_field', {key: key, field: value});
+        setAppConfig(await invoke('save_to_store', {key: key, value: value}));
     }
 
     return(
