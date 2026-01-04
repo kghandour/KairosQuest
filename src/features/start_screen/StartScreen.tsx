@@ -13,8 +13,10 @@ function StartScreen(){
             directory: true,
         });
 
-        setWorkspacePath(directory || "");
-        await update_config("workspace_path", directory)
+        if(directory){
+            setWorkspacePath(directory);
+            await update_config("workspace_path", directory)
+        }
     }
 
     async function update_config(key: string, value: unknown){

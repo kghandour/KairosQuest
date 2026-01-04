@@ -1,3 +1,8 @@
+//! This is a legacy config manager
+//! It creates a single instance that is used
+//! to be edited and fetched
+//! 
+//! Logic might be reused in the future for file management.
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::path::PathBuf;
