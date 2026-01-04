@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import StartScreen from "./features/start_screen/StartScreen";
 import Tasks from "./features/tasks/Tasks";
-import ConfigContext from "./shared/contexts/ConfigContext";
+import { useAppConfigContext } from "./shared/contexts/ConfigContext";
 
 function AppRouter () {
-    const {appConfig, setAppConfig} = useContext(ConfigContext);
+    const {appConfig} = useAppConfigContext();
 
     const is_first_run = () => {
       return Object.keys(appConfig).length == 0

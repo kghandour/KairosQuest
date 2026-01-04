@@ -1,7 +1,4 @@
 use std::collections::HashMap;
-
-use crate::config::save_config;
-use tauri::EventLoopMessage;
 use tauri_plugin_store::StoreExt;
 
 pub mod config;

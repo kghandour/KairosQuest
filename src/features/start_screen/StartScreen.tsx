@@ -1,10 +1,10 @@
 import { open } from '@tauri-apps/plugin-dialog';
-import React, { useContext, useState } from 'react';
-import ConfigContext, { convertVectorToJson } from '../../shared/contexts/ConfigContext';
+import { useState } from 'react';
+import { useAppConfigContext } from '../../shared/contexts/ConfigContext';
 import { invoke } from '@tauri-apps/api/core';
 
 function StartScreen(){
-    const {appConfig, setAppConfig} = useContext(ConfigContext);
+    const {setAppConfig} = useAppConfigContext()
     const [workspacePath, setWorkspacePath] = useState("");
 
     async function selectDirectory(){
@@ -17,7 +17,7 @@ function StartScreen(){
         await update_config("workspace_path", directory)
     }
 
-    async function update_config(key: string, value: string | boolean){
+    async function update_config(key: string, value: unknown){
         setAppConfig(await invoke('save_to_store', {key: key, value: value}));
     }
 
