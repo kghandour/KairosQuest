@@ -48,10 +48,7 @@ pub fn init_config() {
 
     let app_config = if path.exists() {
         let data = std::fs::read_to_string(&path).expect("Failed to read config file");
-        match serde_json::from_str(&data) {
-            Ok(app_config) => app_config,
-            Err(_) => AppConfig::default(),
-        }
+        serde_json::from_str(&data).unwrap_or_default()
     } else {
         AppConfig::default()
     };
@@ -106,7 +103,7 @@ mod tests {
             first_run: false,
             workspace_path: "".to_string(),
         };
-        assert_eq!(format!("{}", cfg), "AppConfig { first_run: false }");
+        assert_eq!(format!("{}", cfg), serde_json::to_string_pretty(&cfg).unwrap());
 
         let json = serde_json::to_string(&cfg).unwrap();
         let round: AppConfig = serde_json::from_str(&json).unwrap();

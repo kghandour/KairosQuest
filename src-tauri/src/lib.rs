@@ -11,7 +11,7 @@ fn store_to_json(entries: Vec<(String, serde_json::Value)>) -> HashMap<String, s
         all_data.insert(key.clone(), value.clone());
     }
 
-    return all_data;
+    all_data
 }
 
 #[tauri::command]
@@ -40,7 +40,7 @@ async fn get_all_config(app: tauri::AppHandle) -> HashMap<String, serde_json::Va
 async fn check_first_run(app: tauri::AppHandle) -> bool {
     let store = app.store("settings.json").expect("Could not load config");
     println!("{}",store.get("workspace_path").expect(""));
-    return store.is_empty();   
+    store.is_empty()
 }
 
 // #[tauri::command]
