@@ -12,7 +12,7 @@ function AppRouter () {
 
     useEffect(() => {
         async function is_first_run() {
-          setIsFirstRun(await invoke('is_first_run'))
+          setIsFirstRun(await invoke('check_first_run'))
         }
 
         is_first_run()

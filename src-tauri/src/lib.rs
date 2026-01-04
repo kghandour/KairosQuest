@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use tauri_plugin_store::StoreExt;
 
+const STORE_FILE: &str = "settings.json";
+
 fn convert_store_to_json(entries: Vec<(String, serde_json::Value)>) -> HashMap<String, serde_json::Value>{
     let mut all_data = HashMap::new();
     for (key, value) in entries {
@@ -12,7 +14,7 @@ fn convert_store_to_json(entries: Vec<(String, serde_json::Value)>) -> HashMap<S
 
 #[tauri::command]
 async fn save_to_store(app: tauri::AppHandle, key: String, value: serde_json::Value) -> HashMap<String, serde_json::Value> {
-    let store = app.store("settings.json").expect("Could not load config");
+    let store = app.store(STORE_FILE).expect("Could not load config");
     store.set(key.clone(), value.clone());
     match store.save() {
         Ok(_) => println!("Saved config"),
@@ -23,14 +25,13 @@ async fn save_to_store(app: tauri::AppHandle, key: String, value: serde_json::Va
 
 #[tauri::command]
 async fn get_all_config(app: tauri::AppHandle) -> HashMap<String, serde_json::Value> {
-    let store = app.store("settings.json").expect("Could not load config");
+    let store = app.store(STORE_FILE).expect("Could not load config");
     convert_store_to_json(store.entries())
 }
 
 #[tauri::command]
 async fn check_first_run(app: tauri::AppHandle) -> bool {
-    let store = app.store("settings.json").expect("Could not load config");
-    println!("{}",store.get("workspace_path").expect(""));
+    let store = app.store(STORE_FILE).expect("Could not load config");
     store.is_empty()
 }
 
