@@ -1,51 +1,33 @@
-use std::collections::HashMap;
+mod storage;
+use storage::settings;
+use storage::workspace;
 use tauri_plugin_store::StoreExt;
-
-const STORE_FILE: &str = "settings.json";
-
-fn convert_store_to_json(entries: Vec<(String, serde_json::Value)>) -> HashMap<String, serde_json::Value>{
-    let mut all_data = HashMap::new();
-    for (key, value) in entries {
-        all_data.insert(key.clone(), value.clone());
-    }
-
-    all_data
-}
-
-#[tauri::command]
-async fn save_to_store(app: tauri::AppHandle, key: String, value: serde_json::Value) -> HashMap<String, serde_json::Value> {
-    let store = app.store(STORE_FILE).expect("Could not load config");
-    store.set(key.clone(), value.clone());
-    match store.save() {
-        Ok(_) => println!("Saved config"),
-        Err(e) => println!("{}",e)
-    };
-    convert_store_to_json(store.entries())
-}
-
-#[tauri::command]
-async fn get_all_config(app: tauri::AppHandle) -> HashMap<String, serde_json::Value> {
-    let store = app.store(STORE_FILE).expect("Could not load config");
-    convert_store_to_json(store.entries())
-}
-
-#[tauri::command]
-async fn check_first_run(app: tauri::AppHandle) -> bool {
-    let store = app.store(STORE_FILE).expect("Could not load config");
-    store.is_empty()
-}
+use tauri_plugin_fs::FsExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            save_to_store,
-            get_all_config,
-            check_first_run
-        ])
+            settings::save_to_store,
+            settings::get_all_config,
+            settings::check_first_run,
+            workspace::create_file
+        ]).setup(|app| {
+            let store = app.store(settings::STORE_FILE).expect("could not load config");
+            let ws_path = store.get("workspace_path").expect("Workspace path not found");
+            let scope = app.fs_scope();
+            match scope.allow_directory(std::path::Path::new(&ws_path.to_string()), true) {
+                Ok(_) => println!("Scope granted"),
+                Err(e) => println!("Error granting directory permission {}", e)
+            };
+      
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
